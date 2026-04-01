@@ -4,7 +4,7 @@ import { getColumns } from "./columns";
 import { CategoryInterface } from "@/app/type/Categorie";
 import CategoryHeader from "@/components/CategoryHeader";
 import { useEffect, useState } from "react";
-import { getAllCategories } from "@/app/context/context";
+import { getAllCategories } from "@/context/context";
 
 export type CategoryFormMode = "add" | "edit" | "view" | "delete";
 

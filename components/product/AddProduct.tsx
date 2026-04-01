@@ -33,7 +33,7 @@ import {
   addProduct,
   getAllCategories,
   getAllUnites,
-} from "@/app/context/context";
+} from "@/context/context";
 import { useEffect, useState } from "react";
 import { UniteInterface } from "@/app/type/Unite";
 import { CategoryInterface } from "@/app/type/Categorie";

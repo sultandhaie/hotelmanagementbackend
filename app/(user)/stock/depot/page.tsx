@@ -4,7 +4,7 @@ import { getColumns } from "./columns";
 import { useEffect, useState } from "react";
 import { DepotInterface } from "@/app/type/Depot";
 import DepotHeader from "@/components/DepotHeader";
-import { getAllDepot } from "@/app/context/context";
+import { getAllDepot } from "@/context/context";
 import DepotAdd from "@/components/DepotAdd";
 
 export type DepotFormMode = "add" | "edit" | "view" | "delete";

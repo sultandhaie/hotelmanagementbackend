@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { playfair } from "../app/font";
 import StatRoom from "./room";
 import { Room, RoomStatus, STATUS_CONFIG } from "../app/type/Room";
-import { getAllRooms } from "../app/context/context";
+import { getAllRooms } from "../context/context";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 

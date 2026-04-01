@@ -26,13 +26,10 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { type DateRange } from "react-day-picker";
-import { Calendar as CalendarIcon, Search, X } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { getAllGuests } from "@/app/context/context";
+import { Calendar as  Search, X } from "lucide-react";
+import { getAllGuests } from "@/context/context";
 import { Guest } from "@/app/type/Client";
+import { AddGuest } from "@/components/addClient";
 
 export type GuestFormMode = "add" | "edit" | "view";
 
@@ -135,6 +132,11 @@ const Page = () => {
     onEdit: (guest) => openModal("edit", guest),
   });
 
+
+  const guestType = [
+    "INDIVIDUAL",
+    "COMPANY"
+  ]
   return (
     <div className={`${inter.className} flex flex-col gap-4 p-4`}>
       {/* Header */}
@@ -161,7 +163,7 @@ const Page = () => {
           onClick={() => setIsAddGuestOpen(false)}
         >
           <div onClick={(e) => e.stopPropagation()}>
-            <AddReservation onClose={() => setIsAddGuestOpen(false)} />
+            <AddGuest onClose={() => setIsAddGuestOpen(false)} />
           </div>
         </div>
       )}
@@ -205,7 +207,7 @@ const Page = () => {
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="all">Toutes les clients</SelectItem>
-                {RoomType.map((type) => (
+                {guestType.map((type) => (
                   <SelectItem value={type} key={type}>
                     {type}
                   </SelectItem>

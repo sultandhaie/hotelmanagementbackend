@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Room, RoomType } from "../app/type/Room";
-import { createRoom, deleteRoom, updateRoom } from "../app/context/context";
+import { createRoom, deleteRoom, updateRoom } from "../context/context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

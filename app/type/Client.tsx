@@ -13,7 +13,7 @@ export interface Guest {
 
   address?: string | null;
   nationality?: string | null;
-
+  notes? : string,
   createdAt: Date;
 }
 

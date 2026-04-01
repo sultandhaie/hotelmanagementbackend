@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 import { UniteInterface } from "@/app/type/Unite";
 import { getColumns } from "./columns";
-import { getAllUnites } from "@/app/context/context";
+import { getAllUnites } from "@/context/context";
 import UniteAdd from "@/components/UniteAdd";
 import { toast } from "sonner";
 

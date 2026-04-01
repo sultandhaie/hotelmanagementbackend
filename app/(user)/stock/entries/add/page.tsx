@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { DataTable } from "../data-table";
 import { getColumns } from "./columns";
 import { ProductInterface } from "@/app/type/Product";
-import { getAllProducts } from "@/app/context/context";
+import { getAllProducts } from "@/context/context";
 
 export interface Entry {
   product: ProductInterface;

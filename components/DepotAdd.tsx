@@ -21,7 +21,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createDepot } from "../app/context/context";
+import { createDepot } from "../context/context";
 import { DepotFormMode } from "../app/(user)/stock/depot/page";
 import { DepotInterface } from "../app/type/Depot";
 

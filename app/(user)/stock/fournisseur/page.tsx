@@ -6,7 +6,7 @@ import { DataTable } from "./data-table";
 import { getColumns } from "./columns";
 import { FournisseurInterface } from "@/app/type/Fournisseur";
 import FournisseurHeader from "@/components/FournisseurHeader";
-import { getAllSuppliers } from "@/app/context/context";
+import { getAllSuppliers } from "@/context/context";
 
 export type FournisseurFormMode = "add" | "edit" | "view" | "delete";
 

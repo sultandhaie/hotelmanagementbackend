@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 import { ProductInterface } from "@/app/type/Product";
 import { getColumns } from "./columns";
-import { getAllProducts, getAllUnites } from "@/app/context/context";
+import { getAllProducts, getAllUnites } from "@/context/context";
 import { toast } from "sonner";
 
 export type ProductFormMode = "add" | "edit" | "view" | "delete";

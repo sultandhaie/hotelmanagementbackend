@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { UniteFormMode } from "../app/(user)/stock/unite/page";
 import { UniteInterface } from "../app/type/Unite";
-import { createUnite } from "../app/context/context";
+import { createUnite } from "../context/context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -1,3 +1,4 @@
+'use client'
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,12 +20,13 @@ import {
   ChevronDown,
   LayoutDashboard,
   BedDouble,
-  Users,
   Calendar,
   UsersIcon,
+  LogOut,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -68,9 +70,21 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function AppSidebar() {
+  const router = useRouter()
+  async function logout() {
+
+    await fetch('http://localhost:3001/user/logout',{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+    })
+
+    await router.push('/auth')
+}
   return (
     <Sidebar>
       <SidebarHeader>
@@ -222,9 +236,9 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="flex items-center gap-2">
-              <Users size={16} />
-              <span>Username</span>
+            <SidebarMenuButton className="flex items-center gap-2 cursor-pointer" onClick={logout}>
+              <LogOut className="text-red-600" size={16} />
+              <span>Log out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

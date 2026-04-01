@@ -16,7 +16,7 @@ import { DataTable } from "./data-table";
 import { getColumns } from "./columns";
 import { Room, RoomType } from "@/app/type/Room";
 import { AddRoom, RoomFormMode } from "@/components/addRoom";
-import { getAllRooms } from "@/app/context/context";
+import { getAllRooms } from "@/context/context";
 
 const Page = () => {
   // Rooms

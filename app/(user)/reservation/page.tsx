@@ -31,7 +31,7 @@ import { format } from "date-fns";
 import { type DateRange } from "react-day-picker";
 import { Calendar as CalendarIcon, Search, X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { getAllReservations } from "@/app/context/context";
+import { getAllReservations } from "@/context/context";
 
 const Page = () => {
   const [query, setQuery] = useState("");
