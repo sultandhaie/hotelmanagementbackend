@@ -13,19 +13,9 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "./data-table";
 import { getColumns } from "./columns";
-import { reservations, ROOMS } from "@/app/data/data";
-import { Room, RoomType } from "@/app/type/Room";
-import { Reservation } from "@/app/type/Reservation";
 import {
-  AddReservation,
   ReservationFormMode,
 } from "@/components/addReservation";
-import { Field } from "@/components/ui/field";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
 import { Calendar as  Search, X } from "lucide-react";
 import { getAllGuests } from "@/context/context";
 import { Guest } from "@/app/type/Client";

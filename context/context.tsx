@@ -1,3 +1,6 @@
+import { Guest } from "@/app/type/Client";
+import { GuestInterface } from "@/app/type/Guest";
+
 export async function createRoom(data: {
   number: number;
   floor: number;
@@ -263,7 +266,25 @@ export async function getAllGuests() {
 }
 
 
+export async function createGuest(data: {
+  data : Guest
+}) {
+  const API_URL = "http://localhost:3001";
+  const response = await fetch(`${API_URL}/guest/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
+  if (!response.ok) {
+    throw new Error("Failed to add Guest");
+  }
+
+  console.log(response)
+  return response;
+}
 
 // Reservation
 export async function getAllReservations() {

@@ -5,8 +5,8 @@ export interface Guest {
   companyName?: string | null;
 
   phone: string;
-  email?: string | null;
-  dateBirth?: string | null;
+  email?: string ;
+  dateBirth?: Date | null;
 
   idNumber: string;
   idType: IDType;

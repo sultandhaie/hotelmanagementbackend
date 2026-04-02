@@ -1,8 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -17,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -30,24 +28,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Reservation } from "../app/type/Reservation";
-import { ROOMS } from "../app/data/data";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
+import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { type DateRange } from "react-day-picker";
 import { Guest } from "@/app/type/Client";
+import { createGuest } from "@/context/context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -57,45 +48,63 @@ interface GuestFormProps {
   mode?: GuestFormMode;
   guest?: Guest;
   onClose: () => void;
-  onSave?: (guest) => void;
+  onSave?: (guest: Guest) => void;
 }
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
-const formSchema = z.object({
-  guestType: z.string().min(3, "Le numéro doit être exactement 3 character."),
-  nom: z.string().min(3, "Le nom doit être exactement 3 character.").optional(),
-  companyName: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character.")
-    .optional(),
-  phone: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character."),
-  email: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character.")
-    .optional(),
-  dateBirth: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character.")
-    .optional(),
-  idNumber: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character."),
-  idType: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character."),
-  address: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character.")
-    .optional(),
-  nationality: z
-    .string()
-    .min(3, "Le nom de company doit être exactement 3 character.")
-    .optional(),
-  notes: z.string().optional(),
-});
+const formSchema = z
+  .object({
+    guestType: z.string().min(3, "Le numéro doit être exactement 3 character."),
+    nom: z
+      .string()
+      .min(3, "Le nom doit être exactement 3 character.")
+      .optional(),
+    companyName: z
+      .string()
+      .min(3, "Le nom de company doit être exactement 3 character.")
+      .optional(),
+    phone: z
+      .string()
+      .min(3, "Le nom de company doit être exactement 3 character."),
+    email: z.preprocess(
+      (val) => (val === "" ? undefined : val),
+      z.string().email("Email invalide").optional(),
+    ),
+    dateBirth: z.preprocess((val) => {
+      if (val === "" || val === null) return undefined;
+      return val instanceof Date ? val : new Date(val as string);
+    }, z.date().optional()),
+    idNumber: z
+      .string()
+      .min(3, "Le nom de company doit être exactement 3 character."),
+    idType: z
+      .string()
+      .min(3, "Le nom de company doit être exactement 3 character."),
+    address: z.string().optional(),
+    nationality: z
+      .string()
+      .min(3, "Le nom de company doit être exactement 3 character.")
+      .optional(),
+    notes: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.guestType === "INDIVIDUAL" && !data.nom) {
+      ctx.addIssue({
+        path: ["nom"],
+        message: "Nom requis pour un client individuel",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+
+    if (data.guestType === "COMPANY" && !data.companyName) {
+      ctx.addIssue({
+        path: ["companyName"],
+        message: "Nom de société requis",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -107,8 +116,8 @@ function mapGuestToForm(guest?: Guest): FormValues {
     guestType: guest?.guestType?.toString() ?? "INDIVIDUAL",
     companyName: guest?.companyName?.toString() ?? "",
     phone: guest?.phone?.toString() ?? "",
-    email: guest?.email?.toString() ?? "",
-    dateBirth: guest?.dateBirth?.toString() ?? "",
+    email: guest?.email?.toString() ?? "undefined",
+    dateBirth: guest?.dateBirth ?? undefined,
     idNumber: guest?.idNumber?.toString() ?? "",
     idType: guest?.idType?.toString() ?? "",
     address: guest?.address?.toString() ?? "",
@@ -176,12 +185,6 @@ function useGuestForm(mode: GuestFormMode, guest?: Guest) {
   return { form, isReadOnly, fieldProps, selectWrapperClass };
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-/*
-function getUniqueFloors(reservation: Reservation[]): number[] {
-  return [...new Set(rooms.map((r) => r.etage))].sort((a, b) => a - b);
-}
-*/
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function AddGuest({
@@ -195,13 +198,21 @@ export function AddGuest({
     guest,
   );
 
-
   const { title, description, submit } = MODE_CONFIG[mode];
   //const floors = getUniqueFloors(ROOMS);
 
-  function onSubmit(data: FormValues) {
+  async function onSubmit(data: FormValues) {
     //data.status = "en attente";
+    console.log(data);
     const mapped = mapFormToGuest(data, guest);
+
+    if (mode === "add") {
+      const result = await createGuest({data : mapped});
+      if (result.status === 201) {
+        toast.success(`Client ${data.companyName || data.nom} Ajouté!`);
+        onClose();
+      }
+    }
     toast(mode === "edit" ? "Client modifiée!" : "Client ajoutée!", {
       position: "bottom-right",
     });
@@ -228,7 +239,9 @@ export function AddGuest({
       </CardHeader>
 
       <CardContent>
-        <form id="guest-form" onSubmit={form.handleSubmit(onSubmit)}>
+        <form 
+        id="guest-form" 
+        onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             {/* Guest Type */}
             <Controller
@@ -353,9 +366,13 @@ export function AddGuest({
                       <Button
                         variant="outline"
                         data-empty={!field.value}
-                        className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                        className="w-53 justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
                       >
-                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
                         <ChevronDownIcon />
                       </Button>
                     </PopoverTrigger>
@@ -388,10 +405,13 @@ export function AddGuest({
                         <SelectValue placeholder="Sélectionner un type" />
                       </SelectTrigger>
                       <SelectContent position="item-aligned">
-                        <SelectItem value="NATIONAL_ID">Carte National</SelectItem>
+                        <SelectItem value="NATIONAL_ID">
+                          Carte National
+                        </SelectItem>
                         <SelectItem value="PASSPORT">Passport</SelectItem>
-                        <SelectItem value="DRIVER_LICENSE">Permis de Conduire</SelectItem>
-
+                        <SelectItem value="DRIVER_LICENSE">
+                          Permis de Conduire
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -403,30 +423,32 @@ export function AddGuest({
             />
 
             <Controller
-                name="idNumber"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>N° identité</FieldLabel>
-                    <Input
-                      {...field}
-                      {...fieldProps}
-                      aria-invalid={fieldState.invalid}
-                      placeholder="00000000"
-                      autoComplete="off"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
+              name="idNumber"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>N° identité</FieldLabel>
+                  <Input
+                    {...field}
+                    {...fieldProps}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="00000000"
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
             <Controller
               name="address"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-demo-notes">Addresse</FieldLabel>
+                  <FieldLabel htmlFor="form-rhf-demo-notes">
+                    Addresse
+                  </FieldLabel>
                   <InputGroup>
                     <Input
                       {...field}
@@ -513,7 +535,9 @@ export function AddGuest({
               >
                 Réinitialiser
               </Button>
-              <Button type="submit" form="guest-form">
+              <Button type="submit" 
+              form="guest-form"
+              >
                 {submit}
               </Button>
             </>
