@@ -8,6 +8,7 @@ return [
 
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'),
+        'https://hotel-erp-gilt.vercel.app',
     ],
 
     'allowed_origins_patterns' => [],
