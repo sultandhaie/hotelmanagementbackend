@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\Reservation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -135,10 +136,10 @@ class ClientController extends Controller
         }
 
         // 3. Total spent trend (comparing spending of reservations if they exist, otherwise clients)
-        $hasReservations = \App\Models\Reservation::exists();
+        $hasReservations = Reservation::exists();
         if ($hasReservations) {
-            $spentBeforeThisMonth = \App\Models\Reservation::where('created_at', '<', $startOfThisMonth)->sum('amount');
-            $spentThisMonth = \App\Models\Reservation::where('created_at', '>=', $startOfThisMonth)->sum('amount');
+            $spentBeforeThisMonth = Reservation::where('created_at', '<', $startOfThisMonth)->sum('amount');
+            $spentThisMonth = Reservation::where('created_at', '>=', $startOfThisMonth)->sum('amount');
         } else {
             $spentBeforeThisMonth = Client::where('created_at', '<', $startOfThisMonth)->sum('total_spent');
             $spentThisMonth = Client::where('created_at', '>=', $startOfThisMonth)->sum('total_spent');

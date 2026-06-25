@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-
+use App\Models\Facility;
+use App\Models\MeetingRoom;
+use App\Models\Villa;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,9 +24,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            'villa' => \App\Models\Villa::class,
-            'meeting_room' => \App\Models\MeetingRoom::class,
-            'facility' => \App\Models\Facility::class,
+            'villa' => Villa::class,
+            'meeting_room' => MeetingRoom::class,
+            'facility' => Facility::class,
         ]);
     }
 }

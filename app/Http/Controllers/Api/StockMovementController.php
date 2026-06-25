@@ -38,7 +38,7 @@ class StockMovementController extends Controller
             'movement_date' => 'required|date',
         ]);
 
-        $validated['reference'] = 'MV-' . strtoupper(Str::random(8));
+        $validated['reference'] = 'MV-'.strtoupper(Str::random(8));
 
         $movement = StockMovement::create($validated);
 

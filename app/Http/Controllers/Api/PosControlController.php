@@ -34,7 +34,7 @@ class PosControlController extends Controller
 
         $control = DB::transaction(function () use ($validated, $request, $products) {
             $control = PosControl::create([
-                'reference' => 'CTRL-' . strtoupper(Str::random(8)),
+                'reference' => 'CTRL-'.strtoupper(Str::random(8)),
                 'point_of_sale' => $validated['point_of_sale'],
                 'controlled_by' => $request->user()->id,
                 'control_date' => now()->toDateString(),

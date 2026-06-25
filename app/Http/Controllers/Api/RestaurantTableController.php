@@ -37,7 +37,7 @@ class RestaurantTableController extends Controller
     public function update(Request $request, RestaurantTable $restaurantTable): JsonResponse
     {
         $validated = $request->validate([
-            'numero' => 'sometimes|string|unique:restaurant_tables,numero,' . $restaurantTable->id,
+            'numero' => 'sometimes|string|unique:restaurant_tables,numero,'.$restaurantTable->id,
             'zone' => 'sometimes|string',
             'capacity' => 'sometimes|integer|min:1',
             'type' => 'sometimes|string',

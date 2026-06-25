@@ -16,8 +16,9 @@ use App\Http\Controllers\Api\RestaurantTableController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StockMovementController;
 use App\Http\Controllers\Api\SupplierController;
-use App\Http\Controllers\Api\VillaController;
 use App\Http\Controllers\Api\TvReceptionController;
+use App\Http\Controllers\Api\TvReceptionStreamController;
+use App\Http\Controllers\Api\VillaController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // TV Reception Dashboard — public, no auth required
 Route::get('/tv/reception', TvReceptionController::class);
+Route::get('/tv/reception/stream', TvReceptionStreamController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -55,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('inventories', InventoryController::class);
     Route::apiResource('pos-controls', PosControlController::class);
 
-    Route::middleware(EnsureUserHasRole::class . ':admin')->group(function () {
+    Route::middleware(EnsureUserHasRole::class.':admin')->group(function () {
         Route::apiResource('warehouses', WarehouseController::class)->only(['store', 'update', 'destroy']);
         Route::apiResource('stock-movements', StockMovementController::class)->only(['store', 'update', 'destroy']);
         Route::apiResource('inventories', InventoryController::class)->only(['store', 'update', 'destroy']);

@@ -44,7 +44,7 @@ class ReservationController extends Controller
             'payments' => 'nullable|array',
         ]);
 
-        $validated['reference'] = 'RES-' . strtoupper(Str::random(8));
+        $validated['reference'] = 'RES-'.strtoupper(Str::random(8));
         $validated['payments'] = $validated['payments'] ?? [];
 
         $reservation = Reservation::create($validated);

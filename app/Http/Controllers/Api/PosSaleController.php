@@ -7,8 +7,8 @@ use App\Models\PosSale;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PosSaleController extends Controller
 {
@@ -61,7 +61,7 @@ class PosSaleController extends Controller
             $changeAmount = max(0, $validated['amount_received'] - $total);
 
             $sale = PosSale::create([
-                'reference' => 'VNT-' . strtoupper(Str::random(8)),
+                'reference' => 'VNT-'.strtoupper(Str::random(8)),
                 'point_of_sale' => $validated['point_of_sale'],
                 'user_id' => $request->user()->id,
                 'client_name' => $validated['client_name'] ?? null,

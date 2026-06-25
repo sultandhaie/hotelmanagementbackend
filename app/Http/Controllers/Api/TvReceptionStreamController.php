@@ -7,16 +7,49 @@ use App\Models\Facility;
 use App\Models\MeetingRoom;
 use App\Models\Reservation;
 use App\Models\Villa;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class TvReceptionController extends Controller
+class TvReceptionStreamController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(Request $request): StreamedResponse
+    {
+        $response = new StreamedResponse(function (): void {
+            $lastHash = '';
+
+            while (true) {
+                $data = $this->getReceptionData();
+                $hash = md5(json_encode($data));
+
+                if ($hash !== $lastHash) {
+                    echo 'data: '.json_encode($data)."\n\n";
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
+                    $lastHash = $hash;
+                }
+
+                if (connection_aborted()) {
+                    break;
+                }
+
+                sleep(3);
+            }
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Connection', 'keep-alive');
+        $response->headers->set('X-Accel-Buffering', 'no');
+
+        return $response;
+    }
+
+    private function getReceptionData(): array
     {
         $today = now()->toDateString();
 
-        // ── Resources occupancy ──
         $totalVillas = Villa::where('status', 'active')->count();
         $occupiedVillas = Reservation::where('reservable_type', Villa::class)
             ->where('arrival_date', '<=', $today)
@@ -27,7 +60,7 @@ class TvReceptionController extends Controller
 
         $totalFacilities = Facility::where('status', 'active')->count();
         $activeFacilityUsers = Reservation::where('reservable_type', Facility::class)
-            ->where('date', $today)
+            ->whereDate('date', $today)
             ->whereNotIn('status', ['annulee'])
             ->sum('attendees');
 
@@ -39,7 +72,6 @@ class TvReceptionController extends Controller
             ->distinct('reservable_id')
             ->count('reservable_id');
 
-        // ── Arrivals today: reservations arriving today (pending/confirmed) + checked in today ──
         $arrivals = Reservation::with('client', 'reservable')
             ->whereDate('arrival_date', $today)
             ->whereIn('status', ['en_attente', 'confirmee', 'check_in'])
@@ -54,7 +86,6 @@ class TvReceptionController extends Controller
                 'reservable_type' => class_basename($r->reservable_type),
             ]);
 
-        // ── Departures today: reservations departing today (checked out or still here) ──
         $departures = Reservation::with('client', 'reservable')
             ->whereDate('departure_date', $today)
             ->whereNotIn('status', ['annulee'])
@@ -69,7 +100,6 @@ class TvReceptionController extends Controller
                 'reservable_type' => class_basename($r->reservable_type),
             ]);
 
-        // ── Currently active guests: checked in and staying through today ──
         $activeGuests = Reservation::with('client', 'reservable')
             ->whereDate('arrival_date', '<=', $today)
             ->whereDate('departure_date', '>=', $today)
@@ -88,7 +118,6 @@ class TvReceptionController extends Controller
                 'departure_date' => $r->departure_date,
             ]);
 
-        // ── Facility reservations for planning timeline ──
         $facilities = Facility::where('status', 'active')->get();
         $facilityReservations = Reservation::where('reservable_type', Facility::class)
             ->whereDate('date', $today)
@@ -116,12 +145,11 @@ class TvReceptionController extends Controller
                 'type' => 'meeting',
             ]);
 
-        // ── Trend: compare today vs yesterday ──
         $yesterday = now()->subDay()->toDateString();
         $reservationsToday = Reservation::whereDate('date', $today)->count();
         $reservationsYesterday = Reservation::whereDate('date', $yesterday)->count();
 
-        return response()->json([
+        return [
             'resources' => [
                 'villas' => [
                     'total' => $totalVillas,
@@ -156,6 +184,6 @@ class TvReceptionController extends Controller
                     ? round(($reservationsToday - $reservationsYesterday) / $reservationsYesterday * 100)
                     : 0,
             ],
-        ]);
+        ];
     }
 }

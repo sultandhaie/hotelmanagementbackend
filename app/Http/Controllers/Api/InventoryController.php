@@ -38,7 +38,7 @@ class InventoryController extends Controller
 
         $inventory = DB::transaction(function () use ($validated, $request, $products) {
             $inventory = Inventory::create([
-                'reference' => 'INV-' . strtoupper(Str::random(8)),
+                'reference' => 'INV-'.strtoupper(Str::random(8)),
                 'warehouse_id' => $validated['warehouse_id'],
                 'method' => $validated['method'],
                 'start_date' => now(),

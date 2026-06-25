@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Client;
-use App\Models\Inventory;
 use App\Models\PosSale;
 use App\Models\Product;
 use App\Models\Reservation;
-use App\Models\Supplier;
 use App\Models\Villa;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
