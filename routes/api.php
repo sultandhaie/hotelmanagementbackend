@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PosSaleController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\RestaurantTableController;
+use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StockMovementController;
 use App\Http\Controllers\Api\SupplierController;
@@ -44,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Existing resources
     Route::apiResource('meeting-rooms', MeetingRoomController::class);
     Route::apiResource('villas', VillaController::class);
+    Route::apiResource('rooms', RoomController::class);
     Route::apiResource('facilities', FacilityController::class);
     Route::get('/clients/stats', [ClientController::class, 'stats']);
     Route::apiResource('clients', ClientController::class);

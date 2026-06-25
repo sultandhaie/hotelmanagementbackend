@@ -6,6 +6,7 @@ use App\Models\Facility;
 use App\Models\HotelService;
 use App\Models\MeetingRoom;
 use App\Models\RestaurantTable;
+use App\Models\Room;
 use App\Models\Setting;
 use App\Models\Villa;
 use Illuminate\Database\Seeder;
@@ -30,6 +31,16 @@ class ParametresSeeder extends Seeder
             ['name' => 'Villa Panorama', 'rooms' => 4, 'capacity' => 8, 'price_per_night' => 65000, 'status' => 'active', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Villa Prestige', 'rooms' => 5, 'capacity' => 10, 'price_per_night' => 85000, 'status' => 'active', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Villa Royale', 'rooms' => 6, 'capacity' => 12, 'price_per_night' => 120000, 'status' => 'active', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        Room::insert([
+            ['name' => 'Chambre 101', 'type' => 'standard', 'floor' => 1, 'capacity' => 2, 'price_per_night' => 8000, 'status' => 'active', 'description' => 'Chambre standard vue jardin', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Chambre 102', 'type' => 'standard', 'floor' => 1, 'capacity' => 2, 'price_per_night' => 8000, 'status' => 'active', 'description' => 'Chambre standard vue piscine', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Chambre 201', 'type' => 'double', 'floor' => 2, 'capacity' => 3, 'price_per_night' => 12000, 'status' => 'active', 'description' => 'Chambre double avec balcon', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Chambre 202', 'type' => 'double', 'floor' => 2, 'capacity' => 3, 'price_per_night' => 12000, 'status' => 'active', 'description' => 'Chambre double vue montagne', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Suite 301', 'type' => 'suite', 'floor' => 3, 'capacity' => 4, 'price_per_night' => 25000, 'status' => 'active', 'description' => 'Suite familiale avec salon', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Suite 302', 'type' => 'suite', 'floor' => 3, 'capacity' => 4, 'price_per_night' => 30000, 'status' => 'active', 'description' => 'Suite prestige avec jacuzzi', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Deluxe 401', 'type' => 'deluxe', 'floor' => 4, 'capacity' => 2, 'price_per_night' => 40000, 'status' => 'active', 'description' => 'Chambre deluxe panorama', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         Facility::insert([

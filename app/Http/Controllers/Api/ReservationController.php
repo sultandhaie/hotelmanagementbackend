@@ -12,6 +12,8 @@ class ReservationController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        $perPage = min(max((int) $request->integer('per_page', 25), 1), 500);
+
         $reservations = Reservation::with('client', 'reservable')
             ->when($request->search, function ($query, $search) {
                 $query->where('reference', 'like', "%{$search}%")
@@ -21,7 +23,7 @@ class ReservationController extends Controller
             ->when($request->payment_status, fn ($query, $status) => $query->where('payment_status', $status))
             ->when($request->reservable_type, fn ($query, $type) => $query->where('reservable_type', $type))
             ->latest()
-            ->paginate(25);
+            ->paginate($perPage);
 
         return response()->json($reservations);
     }
@@ -30,7 +32,7 @@ class ReservationController extends Controller
     {
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
-            'reservable_type' => 'required|string|in:meeting_room,villa,facility',
+            'reservable_type' => 'required|string|in:meeting_room,villa,facility,room',
             'reservable_id' => 'required|integer',
             'date' => 'required|date',
             'start_time' => 'nullable|date_format:H:i',
@@ -61,7 +63,7 @@ class ReservationController extends Controller
     {
         $validated = $request->validate([
             'client_id' => 'sometimes|exists:clients,id',
-            'reservable_type' => 'sometimes|string|in:meeting_room,villa,facility',
+            'reservable_type' => 'sometimes|string|in:meeting_room,villa,facility,room',
             'reservable_id' => 'sometimes|integer',
             'date' => 'sometimes|date',
             'start_time' => 'nullable|date_format:H:i',

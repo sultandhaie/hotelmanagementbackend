@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PosSale;
 use App\Models\Product;
 use App\Models\Reservation;
+use App\Models\Room;
 use App\Models\Villa;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,14 +24,27 @@ class DashboardController extends Controller
             ? round(($reservationsToday - $reservationsYesterday) / $reservationsYesterday * 100)
             : 0;
 
+        $excludedReservationStatuses = ['annulee', 'check_out'];
+
         $totalVillas = Villa::where('status', 'active')->count();
-        $occupiedVillas = Reservation::where('reservable_type', Villa::class)
+        $occupiedVillas = Reservation::where('reservable_type', 'villa')
             ->where('arrival_date', '<=', $today)
             ->where('departure_date', '>=', $today)
-            ->whereNotIn('status', ['annulee', 'check_out'])
+            ->whereNotIn('status', $excludedReservationStatuses)
             ->distinct('reservable_id')
             ->count('reservable_id');
-        $occupationPercent = $totalVillas > 0 ? round($occupiedVillas / $totalVillas * 100) : 0;
+
+        $totalRooms = Room::where('status', 'active')->count();
+        $occupiedRooms = Reservation::where('reservable_type', 'room')
+            ->where('arrival_date', '<=', $today)
+            ->where('departure_date', '>=', $today)
+            ->whereNotIn('status', $excludedReservationStatuses)
+            ->distinct('reservable_id')
+            ->count('reservable_id');
+
+        $totalHebergement = $totalVillas + $totalRooms;
+        $occupiedHebergement = $occupiedVillas + $occupiedRooms;
+        $occupationPercent = $totalHebergement > 0 ? round($occupiedHebergement / $totalHebergement * 100) : 0;
 
         $revenueToday = PosSale::whereDate('created_at', $today)->sum('total');
         $revenueYesterday = PosSale::whereDate('created_at', $yesterday)->sum('total');
@@ -46,9 +60,13 @@ class DashboardController extends Controller
         return response()->json([
             'reservations_today' => $reservationsToday,
             'reservation_trend' => $reservationTrend,
+            'hebergement_occupied' => $occupiedHebergement,
+            'hebergement_total' => $totalHebergement,
+            'occupation_percent' => $occupationPercent,
             'villas_occupied' => $occupiedVillas,
             'villas_total' => $totalVillas,
-            'occupation_percent' => $occupationPercent,
+            'rooms_occupied' => $occupiedRooms,
+            'rooms_total' => $totalRooms,
             'revenue_today' => $revenueToday,
             'revenue_trend' => $revenueTrend,
             'low_stock_products' => $lowStockProducts,
